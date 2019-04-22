@@ -26,16 +26,26 @@ class Scraper
     
     user_profile = {}
    
-    profile_page.css("div.social-icon-container").each do |social_heading|
-      social_heading.css("a").each do |social_link|
-        binding.pry
-
-        site = social_link.value.scan(/\w+/)[1].to_sym
-        
-        user_profile[site] = social_link.css("a").attribute("href").value
+    social_links = profile_page.css("div.social-icon-container").css("a").collect do |site|
+      site["href"]
+    end
+    
+    social_links.each do |social_link|
+      if social_link.scan(/\w+/)[1] != "www"
+        site = social_link.scan(/\w+/)[1].to_sym
+      else
+        site = social_link.scan(/\w+/)[2].to_sym
+      end
+      if [:twitter, :linkedin, :github].include?(site)
+        user_profile[site] = social_link
+      else
+        user_profile[:blog] = social_link
       end
     end
     
+    user_profile[:profile_quote] = profile_page.css("div.profile-quote").text
+    user_profile[:bio] = profile_page.css("div.bio-block.details-block").css("div.description-holder").text.strip
+
     user_profile
   end
 end
