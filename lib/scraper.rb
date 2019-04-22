@@ -47,6 +47,6 @@ class Scraper
     user_profile[:bio] = profile_page.css("div.bio-block.details-block").css("div.description-holder").text.strip
 
     user_profile
-    binding.pry
+    # binding.pry
   end
 end
